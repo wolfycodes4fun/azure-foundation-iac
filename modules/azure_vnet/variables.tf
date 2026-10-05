@@ -3,7 +3,7 @@ variable "vnet_name" {
   description = "Name of the virtual network"
 }
 
-variable "location" {
+variable "region" {
   type        = string
   description = "Location of the virtual network"
 }
