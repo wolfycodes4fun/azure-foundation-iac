@@ -1,28 +1,19 @@
-variable "nic_name" {
-  type        = string
-  description = "Name of the NIC associated with the VM"
-}
-
-variable "vm_name" {
-  type        = string
-  description = "Name of the virtual machine"
-}
-
 variable "vm_size" {
   type        = string
   description = "Virtual machine size"
-  default     = "Standard_D4_v5"
+  default     = "Standard_D2s_v3"
 }
 
 variable "admin_username" {
   type        = string
   description = "Username for admin user for VM"
-  default     = "admin"
+  default     = "adminuser"
 }
 
 variable "admin_password" {
   type        = string
   description = "Password for the admin user mentioned above"
+  sensitive = true
 }
 
 variable "region" {

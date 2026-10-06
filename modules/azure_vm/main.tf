@@ -15,13 +15,14 @@ resource "azurerm_network_interface" "nic" {
 resource "azurerm_linux_virtual_machine" "primary_vm" {
   for_each = toset(var.zones)
 
-  name                = "app-${var.environment}-zone${each.value}-vm"
-  resource_group_name = var.resource_group_name
-  location            = var.region
-  size                = var.vm_size
-  admin_username      = var.admin_username
-  admin_password      = var.admin_password
-  zone                = each.value
+  name                            = "app-${var.environment}-zone${each.value}-vm"
+  resource_group_name             = var.resource_group_name
+  location                        = var.region
+  size                            = var.vm_size
+  admin_username                  = var.admin_username
+  admin_password                  = var.admin_password
+  disable_password_authentication = false
+  zone                            = each.value
 
   network_interface_ids = [
     azurerm_network_interface.nic[each.value].id

@@ -29,3 +29,18 @@ module "azure_vnet" {
   # Public subnet configuration
   public_subnet_name = "${var.region}-${var.environment}-public-subnet"
 }
+
+module "azure_vm" {
+  source = "../../modules/azure_vm"
+
+  region = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  environment = var.environment
+
+  # VM configuration
+  admin_password = var.admin_password
+  zones = ["1", "2"]
+
+  # NIC configuration
+  pvt_subnet_id = module.azure_vnet.private_subnet_id
+}
