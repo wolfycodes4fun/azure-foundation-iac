@@ -27,7 +27,10 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsg_association" {
-  for_each = toset([azurerm_subnet.pvt_subnet.id, azurerm_subnet.public_subnet.id])
+  for_each = {
+    "pvt"    = azurerm_subnet.pvt_subnet.id
+    "public" = azurerm_subnet.public_subnet.id
+  }
 
   subnet_id                 = each.value
   network_security_group_id = azurerm_network_security_group.nsg.id
