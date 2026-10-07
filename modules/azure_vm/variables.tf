@@ -13,7 +13,7 @@ variable "admin_username" {
 variable "admin_password" {
   type        = string
   description = "Password for the admin user mentioned above"
-  sensitive = true
+  sensitive   = true
 }
 
 variable "region" {

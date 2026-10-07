@@ -14,8 +14,8 @@ variable "environment" {
 }
 
 variable "admin_password" {
-  type = string
+  type        = string
   description = "Password for the admin user logging into the provisoned VMs"
-  sensitive = true
+  sensitive   = true
 }
 
