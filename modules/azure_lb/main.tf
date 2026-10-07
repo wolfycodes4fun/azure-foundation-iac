@@ -22,9 +22,9 @@ resource "azurerm_lb_backend_address_pool" "be_address_pool" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "be_address_pol_nic_assoc" {
-  for_each = toset(var.nic_ids)
+  for_each = var.nic_ids
 
-  network_interface_id    = each.value
+  network_interface_id    = each.value.id
   ip_configuration_name   = "internal"
   backend_address_pool_id = azurerm_lb_backend_address_pool.be_address_pool.id
 }

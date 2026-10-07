@@ -38,6 +38,7 @@ module "azure_vm" {
   environment         = var.environment
 
   # VM configuration
+  vm_size = "Standard_D2as_v4"
   admin_password = var.admin_password
   zones          = ["1", "2"]
 

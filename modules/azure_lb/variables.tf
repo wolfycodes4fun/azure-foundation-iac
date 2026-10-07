@@ -23,6 +23,6 @@ variable "be_pool_name" {
 }
 
 variable "nic_ids" {
-  type        = list(string)
+  type        = any
   description = "List of NICs that will be a part of the backend pool"
 }
