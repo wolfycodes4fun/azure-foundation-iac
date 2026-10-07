@@ -4,7 +4,7 @@ The following project consists of full Terraform code to provision an Azure envi
 * Virtual Network with public/private subnets across 2 Availability Zones
 * Virtual Machine instance in a private subnet
 * Bastion host in public subnet for SSH connectivity
-* Load Balancer in the public subnet
+* A Level 4 Load Balancer
 * Azure SQL Database in a dedicated DB subnet
 * NSGs with least-privilege rules
 * Storage accounts for persistent storage
