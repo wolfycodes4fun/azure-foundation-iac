@@ -19,7 +19,7 @@ variable "app_lb_name" {
 variable "be_pool_name" {
   type        = string
   description = "Backend address pool name for frontend LB"
-  default = "pool1"
+  default     = "pool1"
 }
 
 variable "nic_ids" {

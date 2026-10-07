@@ -9,6 +9,8 @@ resource "azurerm_lb" "app_lb" {
   name                = var.app_lb_name
   location            = var.region
   resource_group_name = var.resource_group_name
+  sku                 = "Standard"
+  sku_tier            = "Regional"
 
   frontend_ip_configuration {
     name                 = "lb-pip"
