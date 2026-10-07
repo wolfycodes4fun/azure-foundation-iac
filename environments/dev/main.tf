@@ -20,7 +20,7 @@ module "azure_vnet" {
   source = "../../modules/azure_vnet"
 
   vnet_name           = "${var.project_name}-${var.region}-${var.environment}-vnet"
-  region            = azurerm_resource_group.rg.location
+  region              = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
   # Private subnet configuration
@@ -33,14 +33,27 @@ module "azure_vnet" {
 module "azure_vm" {
   source = "../../modules/azure_vm"
 
-  region = azurerm_resource_group.rg.location
+  region              = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
-  environment = var.environment
+  environment         = var.environment
 
   # VM configuration
+  vm_size        = "Standard_D2as_v4"
   admin_password = var.admin_password
-  zones = ["1", "2"]
+  zones          = ["1", "2"]
 
   # NIC configuration
   pvt_subnet_id = module.azure_vnet.private_subnet_id
+}
+
+module "azure_lb" {
+  source = "../../modules/azure_lb"
+
+  region              = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+
+  # Load balancer configuration
+  pip_name    = "${var.project_name}-${var.environment}-lb-pip1"
+  app_lb_name = "${var.project_name}-${var.environment}-lb"
+  nic_ids     = module.azure_vm.nic_ids
 }
