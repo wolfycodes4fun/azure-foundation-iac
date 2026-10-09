@@ -47,9 +47,9 @@ variable "public_subnet_address_space" {
 }
 
 variable "nsg_01_name" {
-  type = string
+  type        = string
   description = "Name of the primary NSG created"
-  default = "default-shared-01-nsg"
+  default     = "default-shared-01-nsg"
 }
 
 variable "bastion_subnet_address_space" {

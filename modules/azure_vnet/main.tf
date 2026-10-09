@@ -28,14 +28,14 @@ resource "azurerm_network_security_group" "nsg" {
   resource_group_name = var.resource_group_name
 
   security_rule {
-    name = "AllowBastionInbound"
-    priority = 100
-    direction = "Inbound"
-    access = "Allow"
-    protocol = "Tcp"
-    source_port_range = "*"
-    destination_port_ranges = ["22", "3389"]
-    source_address_prefix = azurerm_subnet.bastion_subnet.address_prefixes[0]
+    name                       = "AllowBastionInbound"
+    priority                   = 100
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_ranges    = ["22", "3389"]
+    source_address_prefix      = azurerm_subnet.bastion_subnet.address_prefixes[0]
     destination_address_prefix = "*"
   }
 }
