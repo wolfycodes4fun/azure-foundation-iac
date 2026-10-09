@@ -17,15 +17,3 @@ variable "sql_version" {
   type        = string
   description = "Version of MS SQL"
 }
-
-variable "admin_username" {
-  type        = string
-  description = "Username of DB Administrator"
-  sensitive = true
-}
-
-variable "admin_password" {
-  type        = string
-  description = "Password for above mentioned DB administrator"
-  sensitive = true
-}

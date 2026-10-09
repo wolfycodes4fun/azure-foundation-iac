@@ -57,3 +57,14 @@ module "azure_lb" {
   app_lb_name = "${var.project_name}-${var.environment}-lb"
   nic_ids     = module.azure_vm.nic_ids
 }
+
+module "azure_sql" {
+  source = "../../modules/azure_sql"
+
+  region              = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  environment         = var.environment
+
+  # SQL Server instance configuration
+  sql_version = var.sql_version
+}
