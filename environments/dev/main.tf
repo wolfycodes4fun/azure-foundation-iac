@@ -19,9 +19,10 @@ resource "azurerm_resource_group" "rg" {
 module "azure_vnet" {
   source = "../../modules/azure_vnet"
 
-  vnet_name           = "${var.project_name}-${var.region}-${var.environment}-vnet"
   region              = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
+  environment         = var.environment
+  project_name        = var.project_name
 
   # Private subnet configuration
   pvt_subnet_name = "${var.region}-${var.environment}-pvt-subnet"
