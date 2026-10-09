@@ -28,14 +28,14 @@ resource "azurerm_role_assignment" "tf_user_kv_assoc" {
 }
 
 resource "azurerm_key_vault_key" "tde_key" {
-    depends_on = [ azurerm_key_vault.main_kv ]
+  depends_on = [azurerm_key_vault.main_kv]
 
-    name = "sqldb-tde-key"
-    key_vault_id = azurerm_key_vault.main_kv.id
-    key_type = "RSA"
-    key_size = 2048
+  name         = "sqldb-tde-key"
+  key_vault_id = azurerm_key_vault.main_kv.id
+  key_type     = "RSA"
+  key_size     = 2048
 
-    key_opts = ["unwrapKey", "wrapKey"]
+  key_opts = ["unwrapKey", "wrapKey"]
 }
 
 resource "azurerm_mssql_server" "sql_server" {
