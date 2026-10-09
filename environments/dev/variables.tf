@@ -19,3 +19,7 @@ variable "admin_password" {
   sensitive   = true
 }
 
+variable "sql_version" {
+  type        = string
+  description = "SQL version in the DB server"
+}
