@@ -1,9 +1,9 @@
 #!/bin/bash
 
-RESOURCE_GROUP_NAME="$resource_group_name"
-LOCATION="$region"
-STORAGE_ACCOUNT_NAME="$storage_account_name"
-STORAGE_ACCOUNT_CONTAINER_NAME="$storage_account_container_name"
+RESOURCE_GROUP_NAME="${resource_group_name:-terraform-be-rg}"
+LOCATION="${region:-eastus}"
+STORAGE_ACCOUNT_NAME="${storage_account_name:-statefiles12345}"
+STORAGE_ACCOUNT_CONTAINER_NAME="${storage_account_container_name:-statefiles}"
 
 # Authenticate with Azure
 bash ./azure-login.bash
@@ -45,11 +45,3 @@ az storage container create \
     --public-access off \
     && echo "[SUCCESS] Created container successfully." \
     || echo "[ERROR] Failed to create container."
-
-# Add RBAC role assignment to the Terraform user
-USER_OBJECT_ID=$(az ad signed-in-user show --query id --output tsv)
-
-az role assignment create \
-    --role "Storage Blob Data Owner" \
-    --assignee $USER_OBJECT_ID \
-    --scope "$(az storage account show --name $STORAGE_ACCOUNT_NAME --resource-group $RESOURCE_GROUP_NAME --query id --output tsv)"
