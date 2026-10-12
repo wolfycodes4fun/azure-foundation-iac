@@ -56,3 +56,12 @@ module "azure_sql" {
   # SQL Server instance configuration
   sql_version = var.sql_version
 }
+
+module "azure_storage" {
+  source = "../../modules/azure_storage"
+
+  project_name        = var.project_name
+  region              = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
+  environment         = var.environment
+}
