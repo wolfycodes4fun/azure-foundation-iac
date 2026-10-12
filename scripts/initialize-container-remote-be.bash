@@ -5,10 +5,15 @@ LOCATION="$region"
 STORAGE_ACCOUNT_NAME="$storage_account_name"
 STORAGE_ACCOUNT_CONTAINER_NAME="$storage_account_container_name"
 
+# Authenticate with Azure
+bash ./azure-login.bash
+
 # Create resource group
 az group create \
---name $RESOURCE_GROUP_NAME \
---location $LOCATION
+    --name $RESOURCE_GROUP_NAME \
+    --location $LOCATION \
+    && echo "[SUCCESS] Created resource group successfully." \
+    || echo "[ERROR] Creating resource group failed."
 
 # Create storage account & modify it's properties
 az storage account create \
@@ -19,21 +24,27 @@ az storage account create \
     --sku Standard_LRS \
     --allow-blob-public-access false \
     --encryption-services blob \
-    --min-tls-version TLS1_2
+    --min-tls-version TLS1_2 \
+    && echo "[SUCCESS] Storage account created successfully." \
+    || echo "[ERROR] Failed to create storage account."
 
 az storage account blob-service-properties update \
     --account-name $STORAGE_ACCOUNT_NAME \
     --resource-group $RESOURCE_GROUP_NAME \
     --enable-versioning true \
     --container-retention --enable-container-delete-retention false \
-    --enable-change-feed false
+    --enable-change-feed false \
+    && echo "[SUCCESS] Storage account config updated." \
+    || echo "[WARN] Failed to update storage account config."
 
 # Create container in storage account to store state file
 az storage container create \
     --name $STORAGE_ACCOUNT_CONTAINER_NAME \
     --account-name $STORAGE_ACCOUNT_NAME \
     --auth-mode login \
-    --public-access off
+    --public-access off \
+    && echo "[SUCCESS] Created container successfully." \
+    || echo "[ERROR] Failed to create container."
 
 # Add RBAC role assignment to the Terraform user
 USER_OBJECT_ID=$(az ad signed-in-user show --query id --output tsv)
