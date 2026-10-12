@@ -4,7 +4,7 @@ STORAGE_ACCOUNT_NAME="${storage_account_name:-statefiles12345}"
 RESOURCE_GROUP_NAME="${resource_group_name:-terraform-be-rg}"
 
 # Authenticate with Azure
-bash ./azure-login.sh
+bash ./azure-login.bash
 
 # Delete storage account holding the state file
 az storage account delete \
