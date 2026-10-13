@@ -9,4 +9,4 @@ az login --service-principal \
     --password $APPLICATION_CLIENT_SECRET \
     --tenant $APPLICATION_TENANT_ID \
     && echo "[SUCCESS] Logged into Azure successfully." \
-    || echo "[CRITICAL] Logging into Azure failed."
+    || echo "[CRITICAL] Logging into Azure failed with exit code $?."

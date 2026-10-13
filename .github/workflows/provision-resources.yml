@@ -1,0 +1,14 @@
+---
+name: Environment Create Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-storage-account:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repo Checkout
+        uses: actions/checkout@v4
+      - name: Azure Login
+        run: bash scripts/azure-login.bash
