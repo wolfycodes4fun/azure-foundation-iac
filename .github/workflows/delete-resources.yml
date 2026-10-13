@@ -23,7 +23,9 @@ jobs:
           APPLICATION_CLIENT_ID: ${{ secrets.APPLICATION_CLIENT_ID }}
           APPLICATION_CLIENT_SECRET: ${{ secrets.APPLICATION_CLIENT_SECRET }}
           APPLICATION_TENANT_ID: ${{ secrets.APPLICATION_TENANT_ID }}
-        run: ./azure-login.bash
+        run: |
+          ls -l
+          ./azure-login.bash
       
       # Delete storage account holding the TF state
       - name: Delete Storage Account
