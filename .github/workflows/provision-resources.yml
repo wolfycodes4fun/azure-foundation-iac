@@ -4,13 +4,44 @@ name: Environment Create Pipeline
 on:
   workflow_dispatch:
 
-  pull_request:
-
 jobs:
   create-storage-account:
     runs-on: ubuntu-latest
+    
     steps:
       - name: Repo Checkout
         uses: actions/checkout@v4
+
+      - name: Make Scripts Executable
+        run: |
+          cd scripts/
+          chmod +x *.bash
+
       - name: Azure Login
-        run: bash scripts/azure-login.bash
+        env:
+          APPLICATION_CLIENT_ID: ${{ secrets.APPLICATION_CLIENT_ID }}
+          APPLICATION_CLIENT_SECRET: ${{ secrets.APPLICATION_CLIENT_SECRET }}
+          APPLICATION_TENANT_ID: ${{ secrets.APPLICATION_TENANT_ID }}
+        run: ./azure-login.bash
+      
+      - name: Provision Storage Account
+        env:
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          REGION: ${{ vars.REGION }}
+          STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
+          STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
+        run: ./initialize-container-remote-be.bash
+      
+      - name: Upload Repo Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-environment-provision-code
+          path: terraform-code/
+
+  provision-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.15.5"

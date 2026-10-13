@@ -8,7 +8,7 @@ terraform {
 
   backend "azurerm" {
     resource_group_name  = "terraform-be-rg"
-    storage_account_name = "statefiles12345"
+    storage_account_name = "dev-statefiles12345"
     container_name       = "statefiles"
     key                  = "networking/terraform.tf"
 

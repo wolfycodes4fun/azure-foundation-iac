@@ -1,0 +1,33 @@
+---
+name: Environment Delete Pipeline
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+
+jobs:
+  delete-storage-account:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repo Checkout
+        uses: actions/checkout@v4
+      
+      - name: Make Scripts Executable
+        run: |
+          cd scripts/
+          chmod +x *.bash
+      
+      - name: Azure Login
+        env:
+          APPLICATION_CLIENT_ID: ${{ secrets.APPLICATION_CLIENT_ID }}
+          APPLICATION_CLIENT_SECRET: ${{ secrets.APPLICATION_CLIENT_SECRET }}
+          APPLICATION_TENANT_ID: ${{ secrets.APPLICATION_TENANT_ID }}
+        run: ./azure-login.bash
+      
+      # Delete storage account holding the TF state
+      - name: Delete Storage Account
+        env:
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
+        run: ./delete-tf-storage-acc.bash
