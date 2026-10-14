@@ -26,24 +26,39 @@ jobs:
       
       - name: Initialize Terraform
         run: |
-          cd env/
+          ls -l
+          cd environments/dev/
           terraform init -reconfigure
       
       - name: Run Terraform Destroy
         env:
-          admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
+          TF_VAR_admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
         run: |
-          cd env/
+          cd environments/dev/
           terraform apply -destroy -auto-approve
+      
+      # Upload artifact containing scripts to destroy storage account
+      - name: Upload Scripts Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scripts
+          path: scripts/delete-tf-storage-acc.bash
+          retention-days: 1
 
   delete-storage-account:
     needs: delete-environment
     runs-on: ubuntu-latest
     steps:
+      - name: Download Scripts Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: scripts
+          path: .
+
       - name: Delete Storage Account
         env:
           RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
         run: |
-          cd scripts/
+          chmod +x delete-tf-storage-acc.bash
           ./delete-tf-storage-acc.bash
