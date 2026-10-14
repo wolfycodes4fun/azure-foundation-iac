@@ -28,6 +28,7 @@ jobs:
       
       - name: Initialize Terraform
         run: |
+          ls -l
           cd environment/dev/
           terraform init -reconfigure
       
