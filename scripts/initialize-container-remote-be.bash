@@ -13,6 +13,7 @@ echo "Storage Account Name: $STORAGE_ACCOUNT_NAME"
 az group create \
     --name $RESOURCE_GROUP_NAME \
     --location $LOCATION \
+    --output none \
     && echo "[SUCCESS] Created resource group successfully." \
     || echo "[ERROR] Creating resource group failed."
 
@@ -36,6 +37,7 @@ az storage account blob-service-properties update \
     --enable-versioning true \
     --container-retention --enable-container-delete-retention false \
     --enable-change-feed false \
+    --output none \
     && echo "[SUCCESS] Storage account config updated." \
     || echo "[WARN] Failed to update storage account config."
 

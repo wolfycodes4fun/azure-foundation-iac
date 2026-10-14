@@ -4,6 +4,8 @@ name: Environment Create Pipeline
 on:
   workflow_dispatch:
 
+  pull_request:
+
 jobs:
   create-storage-account:
     runs-on: ubuntu-latest
@@ -36,7 +38,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: azure-environment-provision-code
-          path: terraform-code/
+          path: .
+          retention-days: 1
 
   provision-environment:
     needs: create-storage-account
@@ -51,7 +54,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: azure-environment-provision-code
-          path: terraform-code/
+          path: .
       
       - name: Azure Login
         uses: azure/login@v3
@@ -60,12 +63,12 @@ jobs:
       
       - name: Run TF Init
         run: |
-          cd terraform-code/azure-environment-provision-code/environments/dev/
+          cd azure-environment-provision-code/environments/dev/
           terraform init -reconfigure
       
       - name: Run TF Apply
         env:
           admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
         run: |
-          cd terraform-code/azure-environment-provision-code/environments/dev/
+          cd azure-environment-provision-code/environments/dev/
           terraform apply -auto-approve
