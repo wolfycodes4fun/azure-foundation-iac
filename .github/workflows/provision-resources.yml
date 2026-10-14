@@ -64,12 +64,12 @@ jobs:
       - name: Run TF Init
         run: |
           ls -l
-          cd azure-environment-provision-code/environments/dev/
+          cd environments/dev/
           terraform init -reconfigure
       
       - name: Run TF Apply
         env:
           admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
         run: |
-          cd azure-environment-provision-code/environments/dev/
+          cd environments/dev/
           terraform apply -auto-approve

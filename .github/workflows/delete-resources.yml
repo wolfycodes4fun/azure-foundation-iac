@@ -33,7 +33,7 @@ jobs:
         env:
           admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
         run: |
-          cd env/
+          cd environments/dev/
           terraform apply -destroy -auto-approve
 
   delete-storage-account:
