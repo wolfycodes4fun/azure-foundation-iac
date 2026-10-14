@@ -69,7 +69,7 @@ jobs:
       
       - name: Run TF Apply
         env:
-          admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
+          TF_VAR_admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
         run: |
           cd environments/dev/
           terraform apply -auto-approve
