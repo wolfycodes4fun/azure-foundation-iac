@@ -47,7 +47,7 @@ resource "azurerm_mssql_server" "sql_server" {
 
   name                              = "app-${var.environment}-${var.region}-sqldb"
   resource_group_name               = var.resource_group_name
-  location                          = "westus"
+  location                          = var.sql_server_region
   version                           = var.sql_version
   minimum_tls_version               = "1.2"
   primary_user_assigned_identity_id = azurerm_user_assigned_identity.db_umid.id
