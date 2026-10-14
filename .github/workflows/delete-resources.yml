@@ -37,6 +37,7 @@ jobs:
           terraform apply -destroy -auto-approve
 
   delete-storage-account:
+    needs: delete-environment
     runs-on: ubuntu-latest
     steps:
       - name: Delete Storage Account

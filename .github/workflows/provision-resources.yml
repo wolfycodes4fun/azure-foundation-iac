@@ -39,6 +39,7 @@ jobs:
           path: terraform-code/
 
   provision-environment:
+    needs: create-storage-account
     runs-on: ubuntu-latest
     steps:
       - name: Setup Terraform
