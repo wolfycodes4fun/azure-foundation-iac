@@ -28,7 +28,7 @@ jobs:
       
       - name: Initialize Terraform
         run: |
-          cd env/
+          cd environment/dev/
           terraform init -reconfigure
       
       - name: Run Terraform Destroy
