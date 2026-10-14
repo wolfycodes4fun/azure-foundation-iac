@@ -8,6 +8,7 @@ az storage account delete \
     --name $STORAGE_ACCOUNT_NAME \
     --resource-group $RESOURCE_GROUP_NAME \
     --yes \
+    --output none\
     && echo "[SUCCESS] Storage account deleted successfully." \
     || echo "[ERROR] Deleting storage account failed."
 
@@ -15,5 +16,6 @@ az storage account delete \
 az group delete \
     --name $RESOURCE_GROUP_NAME \
     --yes \
+    --output none \
     && echo "[SUCCESS] Resource group deleted successfully." \
     || echo "[ERROR] Failed to delete the resource group."

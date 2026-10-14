@@ -26,6 +26,7 @@ az storage account create \
     --allow-blob-public-access false \
     --encryption-services blob \
     --min-tls-version TLS1_2 \
+    --output none \
     && echo "[SUCCESS] Storage account created successfully." \
     || echo "[ERROR] Failed to create storage account."
 
@@ -44,5 +45,6 @@ az storage container create \
     --account-name $STORAGE_ACCOUNT_NAME \
     --auth-mode login \
     --public-access off \
+    --output none \
     && echo "[SUCCESS] Created container successfully." \
     || echo "[ERROR] Failed to create container."
