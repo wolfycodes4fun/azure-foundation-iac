@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STORAGE_ACCOUNT_NAME="${STORAGE_ACCOUNT_NAME:-statefiles12345}"
+STORAGE_ACCOUNT_NAME="${STORAGE_ACCOUNT_NAME:-devstatefiles12345}"
 RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-terraform-be-rg}"
 
 # Delete storage account holding the state file

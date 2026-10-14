@@ -22,7 +22,9 @@ jobs:
           APPLICATION_CLIENT_ID: ${{ secrets.APPLICATION_CLIENT_ID }}
           APPLICATION_CLIENT_SECRET: ${{ secrets.APPLICATION_CLIENT_SECRET }}
           APPLICATION_TENANT_ID: ${{ secrets.APPLICATION_TENANT_ID }}
-        run: ./azure-login.bash
+        run: |
+          cd scripts/
+          ./azure-login.bash
       
       - name: Provision Storage Account
         env:
@@ -30,7 +32,9 @@ jobs:
           REGION: ${{ vars.REGION }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
           STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
-        run: ./initialize-container-remote-be.bash
+        run: |
+          cd scripts/
+          ./initialize-container-remote-be.bash
       
       - name: Upload Repo Artifact
         uses: actions/upload-artifact@v4
@@ -45,3 +49,25 @@ jobs:
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: "1.15.5"
+      
+      - name: Download Repo Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: azure-environment-provision-code
+          path: terraform-code/
+      
+      - name: Azure Login
+        run: bash scripts/azure-login.bash
+      
+      - name: Run TF Init
+        
+        run: |
+          cd terraform-code/azure-environment-provision-code/environments/dev/
+          terraform init -reconfigure
+      
+      - name: Run TF Apply
+        env:
+          admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
+        run: |
+          cd terraform-code/azure-environment-provision-code/environments/dev/
+          terraform apply -auto-approve

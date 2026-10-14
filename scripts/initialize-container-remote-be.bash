@@ -2,7 +2,7 @@
 
 RESOURCE_GROUP_NAME="${RESOURCE_GROUP_NAME:-terraform-be-rg}"
 LOCATION="${REGION:-eastus}"
-STORAGE_ACCOUNT_NAME="${STORAGE_ACCOUNT_NAME:-dev-statefiles12345}"
+STORAGE_ACCOUNT_NAME="${STORAGE_ACCOUNT_NAME:-devstatefiles12345}"
 STORAGE_ACCOUNT_CONTAINER_NAME="${storage_account_container_name:-statefiles}"
 
 echo "Resource group name: $RESOURCE_GROUP_NAME"

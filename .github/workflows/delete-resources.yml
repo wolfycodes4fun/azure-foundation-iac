@@ -24,12 +24,16 @@ jobs:
           APPLICATION_CLIENT_SECRET: ${{ secrets.APPLICATION_CLIENT_SECRET }}
           APPLICATION_TENANT_ID: ${{ secrets.APPLICATION_TENANT_ID }}
         run: |
-          ls -l
+          cd scripts/
           ./azure-login.bash
       
+      # - name: Delete Provisioned Environment
+      #   run:
       # Delete storage account holding the TF state
       - name: Delete Storage Account
         env:
           RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
-        run: ./delete-tf-storage-acc.bash
+        run: |
+          cd scripts/
+          ./delete-tf-storage-acc.bash

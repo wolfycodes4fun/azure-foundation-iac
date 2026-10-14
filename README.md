@@ -12,6 +12,6 @@ The following project consists of full Terraform code to provision an Azure envi
 
 **Github Actions Demo Pipeline**
 
-To provision and configure the environment via a pipeline (for no useful reason, just for the fun of it), Github Actions has been used. A service principal in Azure has been created ("azure-foundation-iac-spn") and assigned the roles of 'Contributor' & 'Storage Blob Data Owner' to the subscription where I carry out my workings.
+To provision and configure the environment via a pipeline (for no useful reason, just for the fun of it), Github Actions has been used. A service principal in Azure has been created ("azure-foundation-iac-spn") and assigned the roles of 'Contributor', 'Storage Blob Data Owner' & 'User Access Administrator' to the subscription where I carry out my workings.
 
 The 'provision-resources' file defines the pipeline configuration to spin up the storage account to hold the TF state and the subsequent resources needed in the environment.
