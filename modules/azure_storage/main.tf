@@ -1,5 +1,5 @@
 resource "azurerm_storage_account" "storage_account" {
-  name                            = "${var.project_name}-${var.environment}-${var.region}-storageacc"
+  name                            = "app${var.environment}${var.region}storageacc"
   resource_group_name             = var.resource_group_name
   location                        = var.region
   account_kind                    = "StorageV2"

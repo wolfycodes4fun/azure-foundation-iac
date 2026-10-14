@@ -17,3 +17,9 @@ variable "sql_version" {
   type        = string
   description = "Version of MS SQL"
 }
+
+variable "sql_server_region" {
+  type        = string
+  description = "Region where Azure SQL server is located"
+  default     = "westus"
+}

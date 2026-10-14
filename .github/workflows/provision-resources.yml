@@ -1,0 +1,70 @@
+---
+name: Environment Create Pipeline
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-storage-account:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Repo Checkout
+        uses: actions/checkout@v4
+
+      - name: Make Scripts Executable
+        run: |
+          cd scripts/
+          chmod +x *.bash
+
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Provision Storage Account
+        env:
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          REGION: ${{ vars.REGION }}
+          STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
+          STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
+        run: |
+          cd scripts/
+          ./initialize-container-remote-be.bash
+      
+      - name: Upload Repo Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: azure-environment-provision-code
+          path: terraform-code/
+
+  provision-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.15.5"
+      
+      - name: Download Repo Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: azure-environment-provision-code
+          path: terraform-code/
+      
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Run TF Init
+        run: |
+          cd terraform-code/azure-environment-provision-code/environments/dev/
+          terraform init -reconfigure
+      
+      - name: Run TF Apply
+        env:
+          admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
+        run: |
+          cd terraform-code/azure-environment-provision-code/environments/dev/
+          terraform apply -auto-approve
