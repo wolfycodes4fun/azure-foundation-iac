@@ -63,6 +63,7 @@ jobs:
       
       - name: Run TF Init
         run: |
+          ls -l
           cd azure-environment-provision-code/environments/dev/
           terraform init -reconfigure
       
