@@ -11,9 +11,6 @@ jobs:
       - name: Repo Checkout
         uses: actions/checkout@v4
       
-      - name: Make Scripts Executable
-        run: cd scripts/ && chmod +x *.bash
-      
       - name: Azure Login
         uses: azure/login@v3
         with:
@@ -37,12 +34,31 @@ jobs:
           cd environments/dev/
           terraform apply -destroy -auto-approve
       
+      - name: Revoke Storage Blob Data Contributor role from SPN
+        uses: azure/cli@v2
+        env:
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
+          STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
+        with:
+          azurecliversion: latest
+          inlineScript: |
+            storage_account_id=$(az storage account show \
+              --name "$STORAGE_ACCOUNT_NAME" \
+              --resource-group "$RESOURCE_GROUP_NAME" \
+              --query id \
+              --output tsv)
+            container_id="${storage_account_id}/blobServices/default/containers/${STORAGE_ACCOUNT_CONTAINER_NAME}"
+
+            source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-revokes.sh"
+            revoke_role "Storage Blob Data Contributor" "$container_id"
+      
       # Upload artifact containing scripts to destroy storage account
       - name: Upload Scripts Artifact
         uses: actions/upload-artifact@v4
         with:
           name: scripts
-          path: scripts/delete-tf-storage-acc.bash
+          path: scripts/delete-tf-storage-acc.sh
           retention-days: 1
 
   delete-storage-account:
@@ -60,5 +76,15 @@ jobs:
           RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
         run: |
-          chmod +x delete-tf-storage-acc.bash
-          ./delete-tf-storage-acc.bash
+          chmod +x delete-tf-storage-acc.sh
+          ./delete-tf-storage-acc.sh
+      
+      - name: Revoke Contributor role from SPN
+        uses: azure/cli@v2
+        env:
+          SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        with:
+          azurecliversion: latest
+          inlineScript: |
+            source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-revokes.sh"
+            revoke_role "Contributor" "/subscriptions/${SUBSCRIPTION_ID}"
