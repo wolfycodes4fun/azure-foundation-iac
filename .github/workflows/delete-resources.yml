@@ -41,7 +41,7 @@ jobs:
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
           STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
         with:
-          azurecliversion: latest
+          azcliversion: latest
           inlineScript: |
             storage_account_id=$(az storage account show \
               --name "$STORAGE_ACCOUNT_NAME" \
@@ -84,7 +84,7 @@ jobs:
         env:
           SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         with:
-          azurecliversion: latest
+          azcliversion: latest
           inlineScript: |
-            source "./scripts/helper-funcs/role-revokes.sh"
+            source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-revokes.sh"
             revoke_role "Contributor" "/subscriptions/${SUBSCRIPTION_ID}"
