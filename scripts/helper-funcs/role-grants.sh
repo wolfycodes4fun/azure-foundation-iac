@@ -8,13 +8,11 @@ grant_role() {
         --id $(az account show --query user.name --output tsv) \
         --query displayName \
         --output tsv)}"
-    echo "Username: ${logged_user_name}"
 
     local logged_user_id="${4:-$(az ad sp show \
         --id $(az account show --query user.name -o tsv) \
         --query id \
         --output tsv)}"
-    echo "User ID: ${logged_user_id}"
 
     # Assign specified role to logged in user
     if az role assignment create \
