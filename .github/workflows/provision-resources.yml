@@ -3,6 +3,8 @@ name: Environment Create Pipeline
 
 on:
   workflow_dispatch:
+  
+  pull_request:
 
 jobs:
   create-storage-account:
@@ -15,12 +17,22 @@ jobs:
       - name: Make Scripts Executable
         run: |
           cd scripts/
-          chmod +x *.bash
+          chmod +x *.sh
 
       - name: Azure Login
         uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Grant Contributor Role to SPN
+        uses: azure/cli-script@v2
+        env:
+          SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+        with:
+          azcliversion: latest
+          inlineScript: |
+            source "$GITHUB_WORKSPACE/scripts/helper-funcs/role-grants.sh"
+            grant_role "Contributor" "/subscriptions/${SUBSCRIPTION_ID}" 
       
       - name: Provision Storage Account
         env:
@@ -30,7 +42,7 @@ jobs:
           STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
         run: |
           cd scripts/
-          ./initialize-container-remote-be.bash
+          ./initialize-container-remote-be.sh
       
       - name: Upload Repo Artifact
         uses: actions/upload-artifact@v4
@@ -58,6 +70,25 @@ jobs:
         uses: azure/login@v3
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: Grant Storage Blob Data Contributor role to SPN
+        uses: azure/cli-script@v2
+        env:
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
+          STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
+        with:
+          azcliversion: latest
+          inlineScript: |
+            storage_account_id=$(az storage account show \
+              --name "$STORAGE_ACCOUNT_NAME" \
+              --resource-group "$RESOURCE_GROUP_NAME" \
+              --query id \
+              --output tsv)
+            container_id="${storage_account_id}/blobServices/default/containers/${STORAGE_ACCOUNT_CONTAINER_NAME}"
+            
+            source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-grants.sh"
+            grant_role "Storage Blob Data Contributor" "$container_id"  
       
       - name: Run TF Init
         run: |
