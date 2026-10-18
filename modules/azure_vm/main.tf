@@ -19,10 +19,14 @@ resource "azurerm_linux_virtual_machine" "primary_vm" {
   resource_group_name             = var.resource_group_name
   location                        = var.region
   size                            = var.vm_size
-  admin_username                  = var.admin_username
-  admin_password                  = var.admin_password
-  disable_password_authentication = false
+  admin_username = var.admin_username
+  disable_password_authentication = true
   zone                            = each.value
+
+  admin_ssh_key {
+    username = var.admin_username
+    public_key = 
+  }
 
   network_interface_ids = [
     azurerm_network_interface.nic[each.value].id
