@@ -70,11 +70,6 @@ jobs:
         with:
           name: scripts
           path: .
-      
-      - name: Azure Login
-        uses: azure/login@v3
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Delete Storage Account
         env:
@@ -91,5 +86,5 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            source "./scripts/helper-funcs/role-revokes.sh"
+            source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-revokes.sh"
             revoke_role "Contributor" "/subscriptions/${SUBSCRIPTION_ID}"
