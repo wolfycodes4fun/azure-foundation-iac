@@ -4,8 +4,6 @@ name: Environment Delete Pipeline
 on:
   workflow_dispatch:
 
-  pull_request:
-
 jobs:
   delete-environment:
     runs-on: ubuntu-latest
@@ -37,7 +35,7 @@ jobs:
           terraform apply -destroy -auto-approve
       
       - name: Revoke Storage Blob Data Contributor role from SPN
-        uses: azure/cli-script@v2
+        uses: azure/cli@v2
         env:
           RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
@@ -82,9 +80,9 @@ jobs:
           ./delete-tf-storage-acc.sh
       
       - name: Revoke Contributor role from SPN
-        uses: azure/cli-script@v2
+        uses: azure/cli@v2
         env:
-          SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+          SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         with:
           azurecliversion: latest
           inlineScript: |

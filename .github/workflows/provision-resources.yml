@@ -25,9 +25,9 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
       - name: Grant Contributor Role to SPN
-        uses: azure/cli-script@v2
+        uses: azure/cli@v2
         env:
-          SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+          SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
         with:
           azcliversion: latest
           inlineScript: |
@@ -72,7 +72,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
       - name: Grant Storage Blob Data Contributor role to SPN
-        uses: azure/cli-script@v2
+        uses: azure/cli@v2
         env:
           RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}

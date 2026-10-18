@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-SUBSCRIPTION_ID=$(az account show --query id --output tsv)
-SPN_DISPLAY_NAME=$(az ad sp show --id $(az account show --query user.name --output tsv) --query displayName --output tsv)
-
 grant_role() {
     local role="$1"
     local scope="$2"
