@@ -154,4 +154,4 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.AZURE_VM_SSH_PRIVATE_KEY }}
         run: |
           sleep 30
-          ansible-playbook -i ansible/hosts.ini ansible/playbooks/config-vms.yml
+          ansible-playbook -i ansible/hosts.ini ansible/playbooks/config-vms.yml -vvv
