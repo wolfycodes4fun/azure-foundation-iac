@@ -87,8 +87,8 @@ jobs:
             container_id="${storage_account_id}/blobServices/default/containers/${STORAGE_ACCOUNT_CONTAINER_NAME}"
             
             source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-grants.sh"
-            grant_role "Storage Blob Data Contributor" "$container_id"  
-      
+            grant_role "Storage Blob Data Contributor" "$container_id"
+          
       - name: Run TF Init
         run: |
           cd environments/dev/
@@ -96,7 +96,8 @@ jobs:
       
       - name: Run TF Apply
         env:
-          TF_VAR_admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
+          TF_VAR_admin_username: ${{ secrets.AZURE_VM_ADMIN_USERNAME }}
+          TF_VAR_public_ssh_key: ${{ secrets.PUBLIC_SSH_KEY }}
         run: |
           cd environments/dev/
           terraform apply -auto-approve

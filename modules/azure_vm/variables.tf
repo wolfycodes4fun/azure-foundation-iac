@@ -7,13 +7,13 @@ variable "vm_size" {
 variable "admin_username" {
   type        = string
   description = "Username for admin user for VM"
-  default     = "adminuser"
+  sensitive   = true
 }
 
-variable "admin_password" {
+variable "ssh_key_path" {
   type        = string
-  description = "Password for the admin user mentioned above"
-  sensitive   = true
+  description = "Public ssh key path"
+  default     = try(file("~/.ssh/github_actions.pub"), "")
 }
 
 variable "region" {
