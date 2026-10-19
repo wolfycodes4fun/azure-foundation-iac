@@ -41,30 +41,20 @@ jobs:
         run: |
           cd scripts/
           ./initialize-container-remote-be.sh
-      
-      - name: Upload Repo Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: azure-environment-provision-code
-          path: .
-          retention-days: 1
 
   provision-environment:
     needs: create-storage-account
     runs-on: ubuntu-latest
 
     steps:
+      - name: Repo Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: "1.15.5"
-      
-      - name: Download Repo Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: azure-environment-provision-code
-          path: .
-      
+
       - name: Azure Login
         uses: azure/login@v3
         with:
@@ -102,5 +92,24 @@ jobs:
           cd environments/dev/
           terraform apply -auto-approve
       
-      - name: Print ansible host file
-        run: cat ansible/hosts.ini
+      - name: Upload Repo Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ansible-hosts
+          path: ansible/hosts.ini
+          retention-days: 1
+      
+  configure-environment:
+    needs: provision-environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download Repo Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ansible-hosts
+          path: ansible/
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i ansible.hosts.ini ansible/playbooks/config-vms.yml
