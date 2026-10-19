@@ -45,7 +45,7 @@
         filename: docker
     
     - name: Install Docker Engine & NGINX
-      ansible.buitin.apt:
+      ansible.builtin.apt:
         name:
           - docker-ce
           - docker-ce-cli
