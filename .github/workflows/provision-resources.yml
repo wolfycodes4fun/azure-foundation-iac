@@ -101,52 +101,57 @@ jobs:
             ansible/hosts.ini
           retention-days: 1
       
-  # configure-environment:
-  #   needs: provision-environment
-  #   runs-on: ubuntu-latest
+  configure-environment:
+    needs: provision-environment
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Repo Checkout
-  #       uses: actions/checkout@v4
-
-  #     - name: Azure Login
-  #       uses: azure/login@v3
-  #       with:
-  #         creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-  #     - name: Download Repo Artifact
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: ansible-hosts
-  #         path: ansible/
+    steps:
+      - name: Repo Checkout
+        uses: actions/checkout@v4
       
-  #     - name: Open tunnels to Bastion host
-  #       uses: azure/cli@v2
-  #       env:
-  #         RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
-  #       with:
-  #         azcliversion: latest
-  #         inlineScript: |
-  #           az extension add --name bastion --upgrade
-  #           # Get the target VM IPs from hosts.ini
-  #           TARGET_IPS=$(grep -oP 'ansible_host=\K[0-9.]+' ansible/hosts.ini)
-  #           HOST_PORT=2222
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PVT_SSH_KEY }}
 
-  #           # Establish tunnel
-  #           for ip_addr in $TARGET_IPS; do
-  #             az network bastion tunnel \
-  #               --name "az-foundation-iac-dev-bastion-host" \
-  #               --resource-group "$RESOURCE_GROUP_NAME" \
-  #               --target-ip-address "${ip_addr}" \
-  #               --resource-port 22 \
-  #               --port $HOST_PORT &
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  #             HOST_PORT=$((HOST_PORT + 1))
-  #           done
+      - name: Download Repo Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ansible-hosts
+          path: ansible/
+      
+      - name: Open tunnels to Bastion host
+        uses: azure/cli@v2
+        env:
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az extension add --name bastion --upgrade
+            # Get the target VM IPs from hosts.ini
+            TARGET_IPS=$(grep -oP 'ansible_host=\K[0-9.]+' ansible/hosts.ini)
+            HOST_PORT=2222
 
-  #     - name: Configure VMs through Azure Bastion
-  #       env:
-  #         SSH_PRIVATE_KEY: ${{ secrets.AZURE_VM_SSH_PRIVATE_KEY }}
-  #       run: |
-  #         sleep 30
-  #         ansible-playbook -i ansible/hosts.ini ansible/playbooks/config-vms.yml
+            # Establish tunnel
+            for ip_addr in $TARGET_IPS; do
+              az network bastion tunnel \
+                --name "az-foundation-iac-dev-bastion-host" \
+                --resource-group "$RESOURCE_GROUP_NAME" \
+                --target-ip-address "${ip_addr}" \
+                --resource-port 22 \
+                --port $HOST_PORT &
+
+              HOST_PORT=$((HOST_PORT + 1))
+            done
+
+      - name: Configure VMs through Azure Bastion
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.AZURE_VM_SSH_PRIVATE_KEY }}
+        run: |
+          sleep 30
+          ansible-playbook -i ansible/hosts.ini ansible/playbooks/config-vms.yml
