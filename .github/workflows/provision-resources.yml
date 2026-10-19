@@ -78,6 +78,7 @@ jobs:
             
             source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-grants.sh"
             grant_role "Storage Blob Data Contributor" "$container_id"
+            sleep 20
           
       - name: Run TF Init
         run: |
