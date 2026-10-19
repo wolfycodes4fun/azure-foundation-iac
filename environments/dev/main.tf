@@ -68,13 +68,11 @@ module "azure_storage" {
 }
 
 resource "local_file" "ansible_inventory" {
-  content = templatefile("${path.root}/../../ansible/templates/hosts.tpl",
+  content = templatefile("${path.root}/../../ansible/templates/host.tpl",
     {
-      bastion_ip = module.azure_vnet.bastion_host_ip
       az_vm_pvt_ips = [for nic in values(module.azure_vm.nics) :
         nic.ip_configuration[0].private_ip_address
       ]
-      ssh_user = var.admin_username
   })
-  filename = "${path.root}/../../ansible/hosts.ini"
+  filename = "${path.root}/../../ansible/host-ips.txt"
 }
