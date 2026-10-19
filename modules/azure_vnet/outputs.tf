@@ -5,5 +5,5 @@ output "private_subnet_id" {
 
 output "bastion_host_ip" {
   description = "Public IP associated with the Bastion host"
-  value = azurerm_public_ip.bastion_pip
+  value       = azurerm_public_ip.bastion_pip
 }
