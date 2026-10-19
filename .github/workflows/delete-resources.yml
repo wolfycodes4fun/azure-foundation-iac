@@ -30,7 +30,8 @@ jobs:
       
       - name: Run Terraform Destroy
         env:
-          TF_VAR_admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
+          TF_VAR_admin_username: ${{ secrets.AZURE_VM_ADMIN_USERNAME }}
+          TF_VAR_ssh_public_key: ${{ secrets.PUBLIC_SSH_KEY }}
         run: |
           cd environments/dev/
           terraform apply -destroy -auto-approve

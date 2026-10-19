@@ -1,0 +1,66 @@
+---
+- name: Configure AZ VMs for service deployments
+  hosts: backendservers
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Remove older Docker versions if available
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - docker-compose
+          - docker-compose-v2
+          - docker-doc
+          - docker-buildx
+          - podman-docker
+        state: absent
+        purge: true
+
+    - name: Install pre-requisite packages
+      ansible.builtin.apt:
+        name:
+          - curl
+          - gnupg
+          - ca-certificates
+        state: present
+        update_cache: yes
+    
+    - name: Create apt keyrings for Docker GPG key
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        mode: '0755'
+    
+    - name: Download Docker's GPG key
+      ansible.builtin.get_url:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        dest: /etc/apt/keyrings/docker.asc
+        mode: '0400'
+    
+    - name: Add Docker repository to APT sources
+      ansible.builtin.apt_repository:
+        repo: "deb [arch={{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+        filename: docker
+    
+    - name: Install Docker Engine & NGINX
+      ansible.buitin.apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+          - docker-buildx-plugin
+          - docker-compose-plugin
+          - nginx
+        state: present
+        update_cache: yes
+    
+    - name: Ensure Docker & NGINX run on boot
+      ansible.builtin.systemd:
+        name: "{{ item  }}"
+        state: started
+        enabled: yes
+      loop:
+        - docker
+        - nginx

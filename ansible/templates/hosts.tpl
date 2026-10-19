@@ -6,5 +6,5 @@ bastion-jump ansible_host=${bastion_ip} ansible_user=${ssh_user}
 be-server-${index + 1} ansible_host=${ip} ansible_user=${ssh_user}
 %{ endfor ~}
 
-[webservers:vars]
+[backendservers:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyJump=${ssh_user}@${bastion_ip}'
