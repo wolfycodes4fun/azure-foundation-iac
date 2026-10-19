@@ -6,4 +6,4 @@ be-server-1 ansible_host=10.0.1.4 ansible_user=***
 be-server-2 ansible_host=10.0.1.5 ansible_user=***
 
 [webservers:vars]
-ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyJump=***@20.124.5.122'
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyJump=***@<bastion_host_public_ip>'
