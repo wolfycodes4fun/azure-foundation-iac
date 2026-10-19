@@ -39,7 +39,7 @@ jobs:
       - name: Revoke Storage Blob Data Contributor role from SPN
         uses: azure/cli@v2
         env:
-          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME_TF_STATE_STORAGE }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
           STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
         with:
@@ -80,7 +80,7 @@ jobs:
 
       - name: Delete Storage Account
         env:
-          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME_TF_STATE_STORAGE }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
         run: |
           chmod +x delete-tf-storage-acc.sh

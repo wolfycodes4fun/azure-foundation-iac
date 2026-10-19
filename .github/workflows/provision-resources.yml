@@ -34,7 +34,7 @@ jobs:
       
       - name: Provision Storage Account
         env:
-          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME_TF_STATE_STORAGE }}
           REGION: ${{ vars.REGION }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
           STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
@@ -63,7 +63,7 @@ jobs:
       - name: Grant Storage Blob Data Contributor role to SPN
         uses: azure/cli@v2
         env:
-          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME_TF_STATE_STORAGE }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
           STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
         with:
@@ -127,7 +127,7 @@ jobs:
 
       - name: Configure VMs through Azure Bastion
         env:
-          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          RESOURCE_GROUP_NAME: ${{ vars.AZ_IAC_FOUNDATION_RESOURCE_GROUP_NAME }}
           VM_ADMIN_USER: ${{ secrets.AZURE_VM_ADMIN_USERNAME }}
         run: |
           # Install AZ Bastion extension
