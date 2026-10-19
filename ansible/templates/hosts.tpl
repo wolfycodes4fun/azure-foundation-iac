@@ -2,8 +2,8 @@
 bastion-jump ansible_host=${bastion_ip} ansible_user=${ssh_user}
 
 [backendservers]
-%{ for index, ip in private_ips ~}
-be-server-${index + 1} ansible_host=${az_vm_pvt_ips} ansible_user=${ssh_user}
+%{ for index, ip in az_vm_pvt_ips ~}
+be-server-${index + 1} ansible_host=${ip} ansible_user=${ssh_user}
 %{ endfor ~}
 
 [webservers:vars]
