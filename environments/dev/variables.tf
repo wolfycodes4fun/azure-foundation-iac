@@ -19,7 +19,7 @@ variable "admin_username" {
   sensitive   = true
 }
 
-variable "ssh_key_path" {
+variable "ssh_public_key" {
   type        = string
   description = "Public SSH key used to authenticate with AZ VMs"
   sensitive   = true

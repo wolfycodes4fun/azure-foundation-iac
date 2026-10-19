@@ -10,9 +10,10 @@ variable "admin_username" {
   sensitive   = true
 }
 
-variable "ssh_key_path" {
+variable "ssh_public_key" {
   type        = string
-  description = "Public ssh key path"
+  description = "Public ssh key"
+  sensitive   = true
 }
 
 variable "region" {

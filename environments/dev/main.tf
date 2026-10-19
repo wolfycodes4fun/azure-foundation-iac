@@ -28,7 +28,7 @@ module "azure_vm" {
   # VM configuration
   vm_size        = "Standard_D2as_v4"
   admin_username = var.admin_username
-  ssh_key_path   = var.ssh_key_path
+  ssh_public_key = var.ssh_public_key
   zones          = ["1", "2"]
 
   # NIC configuration
