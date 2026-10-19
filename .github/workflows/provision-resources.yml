@@ -119,13 +119,6 @@ jobs:
         with:
           name: ansible-hosts
           path: ansible/
-      
-      - name: Install AZ CLI Bastion Extension
-        uses: azure/cli@v2
-        with:
-          azcliversion: latest
-          inlineScript: |
-            az extension add --name bastion --upgrade
 
       - name: Setup SSH Agent
         uses: webfactory/ssh-agent@v0.9.0
@@ -137,6 +130,9 @@ jobs:
           RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
           VM_ADMIN_USER: ${{ secrets.AZURE_VM_ADMIN_USERNAME }}
         run: |
+          # Install AZ Bastion extension
+          az extension add --name bastion --upgrade
+
           bash scripts/generate-ansible-hosts.sh "ansible/host-ips.txt"
           sleep 30
           ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/config-vms.yml -vvv
