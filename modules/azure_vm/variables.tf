@@ -13,7 +13,6 @@ variable "admin_username" {
 variable "ssh_key_path" {
   type        = string
   description = "Public ssh key path"
-  default     = try(file("~/.ssh/github_actions.pub"), "")
 }
 
 variable "region" {
