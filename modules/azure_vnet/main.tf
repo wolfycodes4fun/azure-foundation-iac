@@ -13,6 +13,15 @@ resource "azurerm_subnet" "pvt_subnet" {
   default_outbound_access_enabled = false
 }
 
+resource "azurerm_nat_gateway" "pvt_subnet_nat_gw" {
+  name                    = "${var.project_name}-${var.environment}-${var.region}-nat"
+  location                = var.region
+  resource_group_name     = var.resource_group_name
+  sku_name                = "Standard"
+  idle_timeout_in_minutes = 10
+
+}
+
 resource "azurerm_subnet" "public_subnet" {
   name                 = var.public_subnet_name
   resource_group_name  = var.resource_group_name
@@ -41,6 +50,8 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "nsg_association" {
+  depends_on = [azurerm_subnet.pvt_subnet, azurerm_network_security_group.nsg]
+
   subnet_id                 = azurerm_subnet.pvt_subnet.id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
@@ -60,6 +71,14 @@ resource "azurerm_public_ip" "bastion_pip" {
   sku                 = "Standard"
 }
 
+resource "azurerm_public_ip" "nat_pip" {
+  name                = "${var.project_name}-${var.environment}-nat-pip"
+  location            = var.region
+  resource_group_name = var.resource_group_name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
 resource "azurerm_bastion_host" "bastion_host" {
   name                = "${var.project_name}-${var.environment}-bastion-host"
   location            = var.region
@@ -73,4 +92,19 @@ resource "azurerm_bastion_host" "bastion_host" {
     subnet_id            = azurerm_subnet.bastion_subnet.id
     public_ip_address_id = azurerm_public_ip.bastion_pip.id
   }
+}
+
+resource "azurerm_nat_gateway_public_ip_association" "nat_pip_association" {
+  depends_on = [azurerm_nat_gateway.pvt_subnet_nat_gw, azurerm_public_ip.nat_pip]
+
+  nat_gateway_id       = azurerm_nat_gateway.pvt_subnet_nat_gw.id
+  public_ip_address_id = azurerm_public_ip.nat_pip.id
+}
+
+# Attach NAT Gateway to private subnet
+resource "azurerm_subnet_nat_gateway_association" "nat_subnet_association" {
+  depends_on = [azurerm_subnet.pvt_subnet, azurerm_nat_gateway.pvt_subnet_nat_gw]
+
+  nat_gateway_id = azurerm_nat_gateway.pvt_subnet_nat_gw.id
+  subnet_id      = azurerm_subnet.pvt_subnet.id
 }
