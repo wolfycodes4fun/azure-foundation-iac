@@ -60,7 +60,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: scripts
-          path: scripts/delete-tf-storage-acc.sh
+          path: scripts/
           retention-days: 1
 
   delete-storage-account:
@@ -93,5 +93,5 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-revokes.sh"
+            source "./helper-funcs/role-revokes.sh"
             revoke_role "Contributor" "/subscriptions/${SUBSCRIPTION_ID}"

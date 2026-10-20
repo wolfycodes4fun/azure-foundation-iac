@@ -135,4 +135,4 @@ jobs:
 
           bash scripts/generate-ansible-hosts.sh "ansible/host-ips.txt"
           sleep 30
-          ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/config-vms.yml -vvv
+          ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/config-vms.yml
