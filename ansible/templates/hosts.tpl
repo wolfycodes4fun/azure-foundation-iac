@@ -1,10 +1,3 @@
-[bastion]
-bastion-jump ansible_host=${bastion_ip} ansible_user=${ssh_user}
-
-[backendservers]
-%{ for index, ip in az_vm_pvt_ips ~}
-be-server-${index + 1} ansible_host=${ip} ansible_user=${ssh_user}
+%{ for ip in az_vm_pvt_ips ~}
+${ip}
 %{ endfor ~}
-
-[backendservers:vars]
-ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyJump=${ssh_user}@${bastion_ip}'
