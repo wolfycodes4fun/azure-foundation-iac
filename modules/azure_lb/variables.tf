@@ -22,7 +22,7 @@ variable "be_pool_name" {
   default     = "pool1"
 }
 
-variable "nic_ids" {
+variable "nics" {
   type        = any
   description = "List of NICs that will be a part of the backend pool"
 }

@@ -34,36 +34,27 @@ jobs:
       
       - name: Provision Storage Account
         env:
-          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME_TF_STATE_STORAGE }}
           REGION: ${{ vars.REGION }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
           STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
         run: |
           cd scripts/
           ./initialize-container-remote-be.sh
-      
-      - name: Upload Repo Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: azure-environment-provision-code
-          path: .
-          retention-days: 1
 
   provision-environment:
     needs: create-storage-account
     runs-on: ubuntu-latest
+
     steps:
+      - name: Repo Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: "1.15.5"
-      
-      - name: Download Repo Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: azure-environment-provision-code
-          path: .
-      
+
       - name: Azure Login
         uses: azure/login@v3
         with:
@@ -72,7 +63,7 @@ jobs:
       - name: Grant Storage Blob Data Contributor role to SPN
         uses: azure/cli@v2
         env:
-          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME_TF_STATE_STORAGE }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
           STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
         with:
@@ -86,8 +77,9 @@ jobs:
             container_id="${storage_account_id}/blobServices/default/containers/${STORAGE_ACCOUNT_CONTAINER_NAME}"
             
             source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-grants.sh"
-            grant_role "Storage Blob Data Contributor" "$container_id"  
-      
+            grant_role "Storage Blob Data Contributor" "$container_id"
+            sleep 20
+          
       - name: Run TF Init
         run: |
           cd environments/dev/
@@ -95,7 +87,52 @@ jobs:
       
       - name: Run TF Apply
         env:
-          TF_VAR_admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
+          TF_VAR_admin_username: ${{ secrets.AZURE_VM_ADMIN_USERNAME }}
+          TF_VAR_ssh_public_key: ${{ secrets.PUBLIC_SSH_KEY }}
         run: |
           cd environments/dev/
           terraform apply -auto-approve
+      
+      - name: Upload Repo Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ansible-hosts
+          path: |
+            ansible/host-ips.txt
+          retention-days: 1
+      
+  configure-environment:
+    needs: provision-environment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repo Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Download Repo Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ansible-hosts
+          path: ansible/
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PVT_SSH_KEY }}
+
+      - name: Configure VMs through Azure Bastion
+        env:
+          RESOURCE_GROUP_NAME: ${{ vars.AZ_IAC_FOUNDATION_RESOURCE_GROUP_NAME }}
+          VM_ADMIN_USER: ${{ secrets.AZURE_VM_ADMIN_USERNAME }}
+        run: |
+          # Install AZ Bastion extension
+          az extension add --name bastion --upgrade
+
+          bash scripts/generate-ansible-hosts.sh "ansible/host-ips.txt"
+          sleep 30
+          ansible-playbook -i ansible/inventory/hosts.ini ansible/playbooks/config-vms.yml

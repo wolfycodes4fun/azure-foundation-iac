@@ -7,12 +7,12 @@ variable "vm_size" {
 variable "admin_username" {
   type        = string
   description = "Username for admin user for VM"
-  default     = "adminuser"
+  sensitive   = true
 }
 
-variable "admin_password" {
+variable "ssh_public_key" {
   type        = string
-  description = "Password for the admin user mentioned above"
+  description = "Public ssh key"
   sensitive   = true
 }
 

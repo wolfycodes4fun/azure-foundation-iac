@@ -7,6 +7,7 @@ on:
 jobs:
   delete-environment:
     runs-on: ubuntu-latest
+
     steps:
       - name: Repo Checkout
         uses: actions/checkout@v4
@@ -29,7 +30,8 @@ jobs:
       
       - name: Run Terraform Destroy
         env:
-          TF_VAR_admin_password: ${{ secrets.AZURE_VM_ADMIN_PASSWORD }}
+          TF_VAR_admin_username: ${{ secrets.AZURE_VM_ADMIN_USERNAME }}
+          TF_VAR_ssh_public_key: ${{ secrets.PUBLIC_SSH_KEY }}
         run: |
           cd environments/dev/
           terraform apply -destroy -auto-approve
@@ -37,7 +39,7 @@ jobs:
       - name: Revoke Storage Blob Data Contributor role from SPN
         uses: azure/cli@v2
         env:
-          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME_TF_STATE_STORAGE }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
           STORAGE_ACCOUNT_CONTAINER_NAME: ${{ vars.STORAGE_ACCOUNT_CONTAINER_NAME }}
         with:
@@ -58,13 +60,18 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: scripts
-          path: scripts/delete-tf-storage-acc.sh
+          path: scripts/
           retention-days: 1
 
   delete-storage-account:
     needs: delete-environment
     runs-on: ubuntu-latest
     steps:
+      - name: Azure Login
+        uses: azure/login@v3
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Download Scripts Artifact
         uses: actions/download-artifact@v4
         with:
@@ -73,7 +80,7 @@ jobs:
 
       - name: Delete Storage Account
         env:
-          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME }}
+          RESOURCE_GROUP_NAME: ${{ vars.RESOURCE_GROUP_NAME_TF_STATE_STORAGE }}
           STORAGE_ACCOUNT_NAME: ${{ vars.STORAGE_ACCOUNT_NAME }}
         run: |
           chmod +x delete-tf-storage-acc.sh
@@ -86,5 +93,5 @@ jobs:
         with:
           azcliversion: latest
           inlineScript: |
-            source "${GITHUB_WORKSPACE}/scripts/helper-funcs/role-revokes.sh"
+            source "./helper-funcs/role-revokes.sh"
             revoke_role "Contributor" "/subscriptions/${SUBSCRIPTION_ID}"

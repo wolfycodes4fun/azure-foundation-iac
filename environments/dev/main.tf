@@ -27,7 +27,8 @@ module "azure_vm" {
 
   # VM configuration
   vm_size        = "Standard_D2as_v4"
-  admin_password = var.admin_password
+  admin_username = var.admin_username
+  ssh_public_key = var.ssh_public_key
   zones          = ["1", "2"]
 
   # NIC configuration
@@ -43,7 +44,7 @@ module "azure_lb" {
   # Load balancer configuration
   pip_name    = "${var.project_name}-${var.environment}-lb-pip1"
   app_lb_name = "${var.project_name}-${var.environment}-lb"
-  nic_ids     = module.azure_vm.nic_ids
+  nics        = module.azure_vm.nics
 }
 
 module "azure_sql" {
@@ -64,4 +65,14 @@ module "azure_storage" {
   region              = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   environment         = var.environment
+}
+
+resource "local_file" "ansible_inventory" {
+  content = templatefile("${path.root}/../../ansible/templates/hosts.tpl",
+    {
+      az_vm_pvt_ips = [for nic in values(module.azure_vm.nics) :
+        nic.ip_configuration[0].private_ip_address
+      ]
+  })
+  filename = "${path.root}/../../ansible/host-ips.txt"
 }
